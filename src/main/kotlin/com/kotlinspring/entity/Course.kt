@@ -9,6 +9,6 @@ data class Course(
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     val id: Int?,
-    val name: String,
-    val category: String
+    var name: String,
+    var category: String
 )

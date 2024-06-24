@@ -26,7 +26,7 @@ curl -i http://localhost:8080/v1/courses
 UPDATE COURSE:
 ==============
 curl -i \
--d '{"id":null, "name":"Build Restful APIs using Kotlin & SpringBoot2", "category": "Development"}' \
+-d '{"id":null, "name":"Build Restful APIs using Kotlin & SpringBoot2 Martin Ebac", "category": "Development"}' \
 -H "Content-Type: application/json" \
 -X PUT http://localhost:8080/v1/courses/1
 
