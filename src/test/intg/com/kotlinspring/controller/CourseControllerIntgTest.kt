@@ -87,4 +87,17 @@ class CourseControllerIntgTest {
 
         assertEquals("Build restfull api", updatedCourse?.name)
     }
+
+
+    @Test
+    fun deleteCourse() {
+        val course = Course(null, "Build restfull api", "Development")
+        courseRepository.save(course)
+
+        val deleteCourse = webTestClient
+            .delete()
+            .uri("/v1/courses/{course.id}", course.id)
+            .exchange()
+            .expectStatus().isNoContent
+    }
 }

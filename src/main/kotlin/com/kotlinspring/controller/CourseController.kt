@@ -3,22 +3,25 @@ package com.kotlinspring.controller
 import com.kotlinspring.dto.CourseDTO
 import com.kotlinspring.service.CourseService
 import org.springframework.http.HttpStatus
+import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
+import javax.validation.Valid
 
 
 @RestController
 @RequestMapping("/v1/courses")
+@Validated
 class CourseController(val courseService: CourseService) {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    fun addCourse(@RequestBody courseDTO: CourseDTO): CourseDTO =
+    fun addCourse(@RequestBody @Valid courseDTO: CourseDTO): CourseDTO =
         courseService.addCourse(courseDTO)
 
 
     @GetMapping
     fun retrieveAllCourses(): List<CourseDTO> =
-        courseService.retrieveAllCourser()
+        courseService.retrieveAllCourses()
 
 
     @PutMapping("/{course_id}")
