@@ -3,6 +3,7 @@ package com.kotlinspring.controller
 import com.kotlinspring.dto.CourseDTO
 import com.kotlinspring.entity.Course
 import com.kotlinspring.repository.CourseRepository
+import io.mockk.verify
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -94,10 +95,12 @@ class CourseControllerIntgTest {
         val course = Course(null, "Build restfull api", "Development")
         courseRepository.save(course)
 
-        val deleteCourse = webTestClient
+        webTestClient
             .delete()
             .uri("/v1/courses/{course.id}", course.id)
             .exchange()
             .expectStatus().isNoContent
+
+        verify(exactly = 1) { courseRepository.deleteById(any()) }
     }
 }
