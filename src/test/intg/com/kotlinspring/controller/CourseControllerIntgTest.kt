@@ -3,10 +3,11 @@ package com.kotlinspring.controller
 import com.kotlinspring.dto.CourseDTO
 import com.kotlinspring.entity.Course
 import com.kotlinspring.repository.CourseRepository
-import io.mockk.every
-import io.mockk.just
-import io.mockk.runs
-import io.mockk.verify
+import com.kotlinspring.repository.InstructorRepository
+import com.kotlinspring.util.courseEntityList
+import com.kotlinspring.util.instructorEntity
+import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -14,10 +15,7 @@ import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWeb
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.reactive.server.WebTestClient
-import com.kotlinspring.util.courseEntityList as courses
-import org.junit.jupiter.api.Assertions.*
 import org.springframework.web.util.UriComponentsBuilder
-
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
@@ -30,19 +28,31 @@ class CourseControllerIntgTest {
     @Autowired
     lateinit var courseRepository: CourseRepository
 
+    @Autowired
+    lateinit var instructorRepository: InstructorRepository
 
     @BeforeEach
     fun setUp() {
+
         courseRepository.deleteAll()
-        val courses = courses()
+        instructorRepository.deleteAll()
+
+        val instructor = instructorEntity()
+        instructorRepository.save(instructor)
+
+        val courses = courseEntityList(instructor)
         courseRepository.saveAll(courses)
     }
 
     @Test
     fun addCourse() {
-        val courseDTO = CourseDTO(null, "Build restfull api", "Martin")
 
-        val savedDTO = webTestClient
+        val instructor = instructorRepository.findAll().first()
+
+        val courseDTO = CourseDTO(null, "Build Restful APIs using SpringBoot and Kotlin"
+            ,"Dilip Sundarraj", instructor.id)
+
+        val savedCourseDTO = webTestClient
             .post()
             .uri("/v1/courses")
             .bodyValue(courseDTO)
@@ -52,57 +62,67 @@ class CourseControllerIntgTest {
             .returnResult()
             .responseBody
 
-
-        assertTrue(
-            savedDTO!!.id != null
-        )
+        Assertions.assertTrue {
+            savedCourseDTO!!.id != null
+        }
     }
 
     @Test
-    fun retrieveAllCourses() {
-        val courseDTO = webTestClient.get()
+    fun retrieveAllCourses(){
+
+        val courseDTOs = webTestClient
+            .get()
             .uri("/v1/courses")
             .exchange()
-            .expectStatus()
-            .isOk
+            .expectStatus().isOk
             .expectBodyList(CourseDTO::class.java)
             .returnResult()
             .responseBody
-        println("courseDTOs : $courseDTO")
-        assertEquals(3, courseDTO?.size)
+
+        println("courseDTOs : $courseDTOs")
+        assertEquals(3, courseDTOs!!.size)
     }
 
 
     @Test
-    fun retrieveAllCoursesByName() {
+    fun retrieveAllCourses_Byname(){
 
-        val uriString = UriComponentsBuilder.fromUriString("/v1/courses")
+        val uri = UriComponentsBuilder.fromUriString("/v1/courses")
             .queryParam("course_name", "SpringBoot")
             .toUriString()
 
-        val courseDTO = webTestClient.get()
-            .uri(uriString)
+        val courseDTOs = webTestClient
+            .get()
+            .uri(uri)
             .exchange()
-            .expectStatus()
-            .isOk
+            .expectStatus().isOk
             .expectBodyList(CourseDTO::class.java)
             .returnResult()
             .responseBody
-        println("courseDTOs : $courseDTO")
-        assertEquals(2, courseDTO?.size)
+
+        println("courseDTOs : $courseDTOs")
+        assertEquals(2, courseDTOs!!.size)
     }
 
-
     @Test
-    fun updateCourse() {
-        val course = Course(null, "Build restfull api", "Development")
+    fun updateCourse(){
+
+        //existing course
+        val instructor = instructorRepository.findAll().first()
+
+        val course = Course(null,
+            "Build RestFul APis using SpringBoot and Kotlin", "Development", instructor)
         courseRepository.save(course)
 
-        val updatedCourseDTO = CourseDTO(course.id, "Build restfull api", "Development")
+        //courseId
+        //Updated CourseDTO
+        val updatedCourseDTO = CourseDTO(null,
+            "Build RestFul APis using SpringBoot and Kotlin1", "Development", course.instructor!!.id)
+
 
         val updatedCourse = webTestClient
             .put()
-            .uri("/v1/courses/{course.id}", course.id)
+            .uri("/v1/courses/{courseId}", course.id)
             .bodyValue(updatedCourseDTO)
             .exchange()
             .expectStatus().isOk
@@ -110,7 +130,25 @@ class CourseControllerIntgTest {
             .returnResult()
             .responseBody
 
-        assertEquals("Build restfull api", updatedCourse?.name)
+        assertEquals("Build RestFul APis using SpringBoot and Kotlin1", updatedCourse!!.name)
+
     }
 
+    @Test
+    fun deleteCourse(){
+
+        //existing course
+        val instructor = instructorRepository.findAll().first()
+
+        val course = Course(null,
+            "Build RestFul APis using SpringBoot and Kotlin", "Development", instructor)
+        courseRepository.save(course)
+
+        val updatedCourse = webTestClient
+            .delete()
+            .uri("/v1/courses/{courseId}", course.id)
+            .exchange()
+            .expectStatus().isNoContent
+
+    }
 }

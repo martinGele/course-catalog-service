@@ -6,9 +6,8 @@ import org.springframework.data.repository.CrudRepository
 
 interface CourseRepository : CrudRepository<Course, Int> {
 
-    fun findByNameContaining(name: String): List<Course>
+    fun findByNameContaining(courseName : String) : List<Course>
 
-
-    @Query("SELECT * FROM COURSES  WHERE name LIKE %?1%", nativeQuery = true)
-    fun findCoursesByName(name: String): List<Course>
+    @Query(value = "SELECT * FROM COURSES where name like %?1%", nativeQuery = true)
+    fun findCoursesbyName(courseName : String) : List<Course>
 }
