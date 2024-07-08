@@ -1,10 +1,7 @@
 package com.kotlinspring.controller
 
-import com.kotlinspring.dto.CourseDTO
 import com.kotlinspring.dto.InstructorDTO
-import com.kotlinspring.repository.CourseRepository
 import com.kotlinspring.repository.InstructorRepository
-import com.kotlinspring.util.courseEntityList
 import com.kotlinspring.util.instructorEntity
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach
@@ -48,15 +45,8 @@ class InstructorControllerIntgTest {
 
         val instructorDTO = InstructorDTO(null, "Martin Gelevski")
 
-        val savedInstructorDTO = webTestClient
-            .post()
-            .uri("/v1/instructors")
-            .bodyValue(instructorDTO)
-            .exchange()
-            .expectStatus().isCreated
-            .expectBody(InstructorDTO::class.java)
-            .returnResult()
-            .responseBody
+        val savedInstructorDTO = webTestClient.post().uri("/v1/instructors").bodyValue(instructorDTO).exchange()
+            .expectStatus().isCreated.expectBody(InstructorDTO::class.java).returnResult().responseBody
 
         Assertions.assertTrue {
             savedInstructorDTO!!.id != null

@@ -30,7 +30,6 @@ class CourseService(
 
         courseRepository.save(courseEntity)
 
-        logger.info("Saved course is : $courseEntity")
 
         return courseEntity.let {
             CourseDTO(it.id, it.name, it.category,it.instructor!!.id)

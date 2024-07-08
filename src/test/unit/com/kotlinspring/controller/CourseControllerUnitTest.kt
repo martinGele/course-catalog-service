@@ -10,7 +10,6 @@ import io.mockk.just
 import io.mockk.runs
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient
@@ -30,18 +29,18 @@ class CourseControllerUnitTest {
     @MockkBean
     lateinit var courseServiceMockk: CourseService
 
-
     @Test
     fun addCourse() {
         //given
-        val courseDTO = CourseDTO(null, "Build restfull api", "Martin")
+        val courseDTO = courseDTO()
+
+        every { courseServiceMockk.addCourse(any()) } returns courseDTO(id=1)
 
         //when
-        every { courseServiceMockk.addCourse(any()) } returns courseDTO(id = 1)
-
         val savedCourseDTO = webTestClient
             .post()
             .uri("/v1/courses")
+            .contentType(MediaType.APPLICATION_JSON)
             .bodyValue(courseDTO)
             .exchange()
             .expectStatus().isCreated
@@ -50,7 +49,9 @@ class CourseControllerUnitTest {
             .responseBody
 
         //then
-        assertTrue(savedCourseDTO!!.id != null)
+        Assertions.assertTrue {
+            savedCourseDTO!!.id != null
+        }
     }
 
 
@@ -155,7 +156,7 @@ class CourseControllerUnitTest {
     @Test
     fun addCourse_runtime_exception(){
         val courseDTO = courseDTO()
-        val errorMessage = "Unexpected error Occurred"
+        val errorMessage = "courseDTO.instructorId must not be null"
         every { courseServiceMockk.addCourse(any()) } throws RuntimeException(errorMessage)
 
         val response = webTestClient.post()
