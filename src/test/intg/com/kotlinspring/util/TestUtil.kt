@@ -61,8 +61,8 @@ fun instructorEntity(name: String = "Dilip Sundarraj") = Instructor(null, name)
 
 fun instructorEntityList() = listOf(
     Instructor(null, "Martin"),
-    Instructor(null, "Martin Gelevski"),
-    Instructor(null, "Martin Gelevski")
+    Instructor(null, "JOni Gelevski"),
+    Instructor(null, "Darko Gelevski")
 )
 
 
