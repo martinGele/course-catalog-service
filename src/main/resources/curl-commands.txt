@@ -48,7 +48,7 @@ Instructor Controller: |
 CREATE INSTRUCTOR:
 ==================
 curl -i \
--d '{"id":null, "name":"Dilip Sundarraj"}' \
+-d '{"id":null, "name":"Martin Gelevski"}' \
 -H "Content-Type: application/json" \
 -X POST http://localhost:8080/v1/instructors
 
