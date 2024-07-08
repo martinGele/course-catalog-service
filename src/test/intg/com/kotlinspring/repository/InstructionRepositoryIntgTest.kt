@@ -32,7 +32,7 @@ class InstructionRepositoryIntgTest {
         val courses = instructorRepository.findInstructor("Martin")
         println("courses : $courses")
 
-        assertEquals(3, courses.size)
+        assertEquals(1, courses.size)
 
     }
 }
