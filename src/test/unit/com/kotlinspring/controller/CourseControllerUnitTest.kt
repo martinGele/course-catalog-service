@@ -78,7 +78,7 @@ class CourseControllerUnitTest {
 
         println("courseDTOs : $courseDTOs")
 
-        Assertions.assertEquals(2, courseDTOs!!.size)
+        assertEquals(2, courseDTOs!!.size)
 
     }
 
@@ -106,7 +106,7 @@ class CourseControllerUnitTest {
             .returnResult()
             .responseBody
 
-        Assertions.assertEquals("Apache Kafka for Developers using Spring Boot1", updatedCourseDTO?.name)
+        assertEquals("Apache Kafka for Developers using Spring Boot1", updatedCourseDTO?.name)
 
     }
 
